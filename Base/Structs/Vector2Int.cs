@@ -1,12 +1,20 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Runtime.Serialization;
 
-namespace TileSystem2
+namespace TileSystem2.Base.Structs
 {
     public struct Vector2Int
     {
+        [DataMember]
         public int X;
+        [DataMember]
         public int Y;
+
+        public static Vector2Int Zero { get; private set; } = new(0, 0);
+        public static Vector2Int One { get; private set; } = new(1, 1);
+        public static Vector2Int UnitX { get; private set; } = new(1, 0);
+        public static Vector2Int UnitY { get; private set; } = new(0, 1);
 
         public Vector2Int(int x, int z)
         {
@@ -54,17 +62,13 @@ namespace TileSystem2
             => obj is Vector2Int v && Equals(v);
 
         public bool Equals(Vector2Int other)
-            => (X == other.X) && (Y == other.Y);
+            => X == other.X && Y == other.Y;
 
         public static bool operator ==(Vector2Int left, Vector2Int right)
-            => (left.X == right.X) && (left.Y == right.Y);
-
+            => left.X == right.X && left.Y == right.Y;
 
         public static bool operator !=(Vector2Int left, Vector2Int right)
-        {
-            if(left.X == right.X) return left.Y != right.Y;
-            return true;
-        }
+            => left.X != right.X || left.Y != right.Y;
 
         public static Vector2Int operator *(Vector2Int left, Vector2Int right)
             => new(left.X * right.X, left.Y * right.Y);
@@ -90,19 +94,10 @@ namespace TileSystem2
         public static Vector2Int operator -(Vector2Int left, Vector2Int right)
             => new(left.X - right.X, left.Y - right.Y);
 
-        public Vector2 ToVector2()
-            => new(X, Y);
-
-        public void Normalize()
-        {
-            X = Normalized.X;
-            Y = Normalized.Y;
-        }
-
-        public override int GetHashCode()
-            => (X.GetHashCode() + Y.GetHashCode());
-
-        public override string ToString()
-            => $"X:{X}, Y:{Y}";
+        public Vector2 ToVector2() => new(X, Y);
+        public Point ToPoint() => new(X, Y);
+        public void Normalize() => this = Normalized;
+        public override int GetHashCode() => X.GetHashCode() + Y.GetHashCode();
+        public override string ToString() => $"X:{X}, Y:{Y}";
     }
 }

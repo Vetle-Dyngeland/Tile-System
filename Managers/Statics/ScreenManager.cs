@@ -1,17 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TileSystem2.Base.Structs;
 
-namespace TileSystem2
+namespace TileSystem2.Managers.Statics
 {
     public static class ScreenManager
     {
         private static GraphicsDeviceManager graphics;
 
         public static Vector2Int FullScreenSize { get; private set; }
-        public static Vector2Int PrefferedScreenSize { get; private set; } = new (1600, 900);
+        public static Vector2Int PrefferedScreenSize { get; private set; } = new(1600, 900);
         public static bool IsFullScreen { get; private set; }
 
-        public static Vector2Int ScreenSize {
+        public static Vector2Int ScreenSize
+        {
             get => IsFullScreen ? FullScreenSize : PrefferedScreenSize;
             set => PrefferedScreenSize = IsFullScreen ? PrefferedScreenSize : value;
         }
@@ -38,7 +40,7 @@ namespace TileSystem2
         public static void SetFullScreen(bool? value = null, bool updateScreen = true)
         {
             IsFullScreen = value == null ? !IsFullScreen : value.Value;
-            if(updateScreen) UpdateScreen();
+            if (updateScreen) UpdateScreen();
         }
     }
 }

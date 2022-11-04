@@ -1,0 +1,45 @@
+﻿{
+  "levels": [
+    {
+      "world": 0,
+      "index": 0,
+      "tiles": [
+        [
+          "Grass0",
+          "Grass1",
+          "Grass1",
+          "Grass1",
+          "Grass2"
+        ],
+        [
+          "Grass3",
+          "Grass4",
+          "Grass4",
+          "Grass4",
+          "Grass5"
+        ],
+        [
+          "Grass3",
+          "Grass4",
+          "Grass4",
+          "Grass4",
+          "Grass5"
+        ],
+        [
+          "Grass3",
+          "Grass4",
+          "Grass4",
+          "Grass4",
+          "Grass5"
+        ],
+        [
+          "Grass6",
+          "Grass7",
+          "Grass7",
+          "Grass7",
+          "Grass8"
+        ]
+      ]
+    }
+  ]
+}
