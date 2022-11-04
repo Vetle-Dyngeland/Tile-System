@@ -1,10 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Apos.Input;
+using IronXL;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Data;
 using TileSystem2.Base.Sprites;
 using TileSystem2.Base.Structs;
 using TileSystem2.Helpers;
 using TileSystem2.Managers.Statics;
-using Newtonsoft.Json;
 
 namespace TileSystem2.Managers.Level
 {
@@ -14,31 +17,54 @@ namespace TileSystem2.Managers.Level
         public readonly Board board = new();
         private int currentLevelIndex = 0;
 
-        public BoardManager()
-        {
-            
-        }
+        public string LevelFilesLocation { get; } = @"D:\Development\Projects\Visual Studio Projects\Monogame\TileSystem2\External storage files\Levels\";
+
+        private readonly ICondition loadNextLevelCondition = new AllCondition(
+            new KeyboardCondition(Keys.LeftControl), new KeyboardCondition(Keys.N));
+        private readonly ICondition loadPreviousLevelCondition = new AllCondition(
+            new KeyboardCondition(Keys.LeftControl), new KeyboardCondition(Keys.P));
 
         public void LoadContent()
         {
             LoadLevel(currentLevelIndex);
-            /*level = new() {
-                new() { "Grass0", "Grass1", "Grass1", "Grass1", "Grass2" },
-                new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
-                new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
-                new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
-                new() { "Grass6", "Grass7", "Grass7", "Grass7", "Grass8" },
-            };*/
         }
 
-        private void LoadLevel(int index)
+        public void LoadLevel(int index)
         {
-            
+            DataTable csv = GetDataTable(index);
+            level = new();
+            for(int x = 0; x < csv.Columns.Count; x++) {
+                level.Add(new());
+                for(int y = 0; y < csv.Rows.Count; y++) {
+                    level[x].Add(csv.Rows[y][x].ToString());
+                }
+            }
+        }
+
+        private DataTable GetDataTable(int index)
+        {
+            currentLevelIndex = index;
+            string fullFileLocation = $"{LevelFilesLocation}";
+            if(fullFileLocation[^1] != '\\') fullFileLocation += '\\';
+            fullFileLocation += $"Level{index}.csv";
+
+            return ReadCSV(fullFileLocation);
+        }
+
+        private DataTable ReadCSV(string fileLocation)
+        {
+            WorkBook wb = WorkBook.Load(fileLocation);
+            return wb.DefaultWorkSheet.ToDataTable(false);
         }
 
         public void Update()
         {
-            //if any information has changed, change the json
+            //Debug
+            if(loadNextLevelCondition.Pressed())
+                LoadLevel(++currentLevelIndex);
+            if(loadPreviousLevelCondition.Pressed())
+                LoadLevel(--currentLevelIndex);
+
             board.Generate(level.To2DArray());
 
             foreach(Sprite sprite in board.tiles)

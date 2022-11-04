@@ -14,24 +14,27 @@ namespace TileSystem2.Managers.Statics
 
         public static void Log(string message)
         {
-            string full = $"\"{message}\"";
-            if(gameTime == default || gameTime.TotalGameTime.TotalSeconds.ToString() == "0") full += ", (00:00:00)";
-            else {
-                full += ", (";
-                string gameTimeString = gameTime.TotalGameTime.ToString();
-                for(int i = 0; i < gameTimeString.Length - 4; i++)
-                    full += gameTimeString[i];
-                while(full[^1] == '0' && (full[^2] != '.' && full[^2] != ':'))
-                    full = full.RemoveChars(1, full.Length - 1);
-                full += ")";
-            }
-
             using StreamWriter file = new(FileLocation, append: true);
-            file.WriteLine(full);
+            if(File.ReadAllText(FileLocation).Length == 0)
+                file.WriteLine($"\"{message}\", ({GetGameTimeString()})");
+            else file.WriteLine($"\n\"{message}\", ({GetGameTimeString()})");
+        }
+
+        private static string GetGameTimeString()
+        {
+            if(gameTime == default || gameTime.TotalGameTime.TotalSeconds.ToString() == "0") return ", (00:00:00)";
+
+            string gameTimeString = gameTime.TotalGameTime.ToString();
+            string ret = string.Empty;
+            for(int i = 0; i < gameTimeString.Length - 4; i++)
+                ret += gameTimeString[i];
+            while(ret[^1] == '0' && (ret[^2] != '.' && ret[^2] != ':'))
+                ret = ret.RemoveChars(1, ret.Length - 1);
+            return ret;
         }
 
         public static void Log(object message) => Log(message.ToString());
 
-        public static void UpdateGameTime(GameTime gameTime_) => gameTime = gameTime_;
+        public static void UpdateGameTime(GameTime gameTime_) => gameTime = gameTime_;  
     }
 }
