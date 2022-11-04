@@ -29,7 +29,8 @@ namespace TileSystem2.Managers.Statics
             using StreamWriter file = new(FileLocation, append: true);
             file.WriteLine(full);
         }
-        public static void Log(object message)=> Log(message.ToString());
+
+        public static void Log(object message) => Log(message.ToString());
 
         public static void UpdateGameTime(GameTime gameTime_) => gameTime = gameTime_;
     }

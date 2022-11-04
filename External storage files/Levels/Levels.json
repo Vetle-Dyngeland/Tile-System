@@ -2,7 +2,6 @@
   "levels": [
     {
       "world": 0,
-      "index": 0,
       "tiles": [
         [
           "Grass0",
@@ -38,6 +37,14 @@
           "Grass7",
           "Grass7",
           "Grass8"
+        ]
+      ]
+    },
+    {
+      "world": 0,
+      "tiles": [
+        [
+          "Grass0"
         ]
       ]
     }

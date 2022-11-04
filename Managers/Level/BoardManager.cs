@@ -4,6 +4,7 @@ using TileSystem2.Base.Sprites;
 using TileSystem2.Base.Structs;
 using TileSystem2.Helpers;
 using TileSystem2.Managers.Statics;
+using Newtonsoft.Json;
 
 namespace TileSystem2.Managers.Level
 {
@@ -11,6 +12,7 @@ namespace TileSystem2.Managers.Level
     {
         public List<List<string>> level;
         public readonly Board board = new();
+        private int currentLevelIndex = 0;
 
         public BoardManager()
         {
@@ -19,14 +21,19 @@ namespace TileSystem2.Managers.Level
 
         public void LoadContent()
         {
-            //Load level from json file
-            level = new() {
+            LoadLevel(currentLevelIndex);
+            /*level = new() {
                 new() { "Grass0", "Grass1", "Grass1", "Grass1", "Grass2" },
                 new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
                 new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
                 new() { "Grass3", "Grass4", "Grass4", "Grass4", "Grass5" },
                 new() { "Grass6", "Grass7", "Grass7", "Grass7", "Grass8" },
-            };
+            };*/
+        }
+
+        private void LoadLevel(int index)
+        {
+            
         }
 
         public void Update()
