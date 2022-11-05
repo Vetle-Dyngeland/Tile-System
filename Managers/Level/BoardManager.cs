@@ -1,9 +1,11 @@
-﻿using Apos.Input;
+﻿using Apos.Camera;
+using Apos.Input;
 using IronXL;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Data;
+using TileSystem2.Base.Level;
 using TileSystem2.Base.Sprites;
 using TileSystem2.Base.Structs;
 using TileSystem2.Helpers;
@@ -13,37 +15,49 @@ namespace TileSystem2.Managers.Level
 {
     public class BoardManager
     {
+        //Back-end
         public List<List<string>> level;
         public readonly Board board = new();
         private int currentLevelIndex = 0;
+        private readonly Camera camera;
+        public static Vector2Int mouseTilePosition;
+        private readonly BoardEditor boardEditor;
 
-        public string LevelFilesLocation { get; } = @"D:\Development\Projects\Visual Studio Projects\Monogame\TileSystem2\External storage files\Levels\";
+        public static string LevelFilesLocation { get; } = @"D:\Development\Projects\Visual Studio Projects\Monogame\TileSystem2\External storage files\Levels\";
 
+        //Input
         private readonly ICondition loadNextLevelCondition = new AllCondition(
             new KeyboardCondition(Keys.LeftControl), new KeyboardCondition(Keys.N));
         private readonly ICondition loadPreviousLevelCondition = new AllCondition(
             new KeyboardCondition(Keys.LeftControl), new KeyboardCondition(Keys.P));
 
+        public BoardManager(Camera camera)
+        {
+            this.camera = camera;
+            boardEditor = new(camera, level);
+        }
+
         public void LoadContent()
         {
             LoadLevel(currentLevelIndex);
+            boardEditor.LoadContent();
         }
 
         public void LoadLevel(int index)
         {
+            currentLevelIndex = index;
             DataTable csv = GetDataTable(index);
             level = new();
             for(int x = 0; x < csv.Columns.Count; x++) {
                 level.Add(new());
-                for(int y = 0; y < csv.Rows.Count; y++) {
+                for(int y = 0; y < csv.Rows.Count; y++) 
                     level[x].Add(csv.Rows[y][x].ToString());
-                }
             }
+            board.Generate(level.To2DArray());
         }
 
-        private DataTable GetDataTable(int index)
+        private static DataTable GetDataTable(int index)
         {
-            currentLevelIndex = index;
             string fullFileLocation = $"{LevelFilesLocation}";
             if(fullFileLocation[^1] != '\\') fullFileLocation += '\\';
             fullFileLocation += $"Level{index}.csv";
@@ -51,13 +65,13 @@ namespace TileSystem2.Managers.Level
             return ReadCSV(fullFileLocation);
         }
 
-        private DataTable ReadCSV(string fileLocation)
+        private static DataTable ReadCSV(string fileLocation)
         {
             WorkBook wb = WorkBook.Load(fileLocation);
             return wb.DefaultWorkSheet.ToDataTable(false);
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
             //Debug
             if(loadNextLevelCondition.Pressed())
@@ -65,39 +79,18 @@ namespace TileSystem2.Managers.Level
             if(loadPreviousLevelCondition.Pressed())
                 LoadLevel(--currentLevelIndex);
 
+            UpdateMouseTilePos();
+            boardEditor.Update(gameTime);
+
             board.Generate(level.To2DArray());
 
             foreach(Sprite sprite in board.tiles)
                 DrawManager.AddSpriteAtLayer(sprite, 1);
         }
-    }
 
-    public class Board
-    {
-        public Tile[,] tiles;
-        public int width, height;
-
-        public void Generate(string[,] level)
+        private void UpdateMouseTilePos()
         {
-            width = level.GetLength(0);
-            height = level.GetLength(1);
-            tiles = new Tile[width, height];
-
-            for(int x = 0; x < width; x++)
-                for(int y = 0; y < height; y++) {
-                    GetTileInfo(level, new(x, y), out string type, out int index);
-                    tiles[x, y] = new(type, index, new Vector2(x, y) * Tile.TileSize);
-                }
-        }
-
-        private static void GetTileInfo(string[,] level, Vector2Int pos, out string type, out int index)
-        {
-            int checkIndex = 0;
-
-            while(checkIndex < level[pos.X, pos.Y].Length && !int.TryParse(level[pos.X, pos.Y][checkIndex].ToString(), out _)) 
-                checkIndex++;
-
-            type = level[pos.X, pos.Y].GetInt(out index, checkIndex, true);
+            mouseTilePosition = new(Vector2.Floor(camera.ScreenToWorld(InputHelper.NewMouse.Position.ToVector2()) / Tile.TileSize) * Tile.TileSize);
         }
     }
 }

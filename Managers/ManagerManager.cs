@@ -20,7 +20,7 @@ namespace TileSystem2.Managers
             this.game = game;
             cameraManager = new(game.GraphicsDevice, game.Window);
             DrawManager.Setup(game.GraphicsDevice, cameraManager.camera);
-            boardManager = new();
+            boardManager = new(cameraManager.camera);
         }
 
         public void LoadContent()
@@ -33,7 +33,7 @@ namespace TileSystem2.Managers
             if(exitCondition.Held()) game.Exit();
 
             cameraManager.Update(gameTime);
-            boardManager.Update();
+            boardManager.Update(gameTime);
         }
     }
 }
