@@ -2,25 +2,25 @@
 {
     public static class StringHelper
     {
-        public static string GetInt(this string s, out int result, int startIndex = 0, bool shouldRemove = false)
+        public static string GetInt(this string str, out int result, int startIndex = 0, bool shouldRemove = false)
         {
             int checkIndex = startIndex;
             string resultString = string.Empty;
-            while(checkIndex < s.Length && int.TryParse(s[checkIndex].ToString(), out int res)){
+            while(checkIndex < str.Length && int.TryParse(str[checkIndex].ToString(), out int res)){
                 resultString += res.ToString();
 
-                if(shouldRemove) s = RemoveChars(s, startIndex: startIndex);
+                if(shouldRemove) str = RemoveChars(str, startIndex: startIndex);
                 else checkIndex++;
             }
             result = int.Parse(resultString);
-            return s;
+            return str;
         }
 
-        public static string RemoveChars(this string s, int amount = 1, int startIndex = 0)
+        public static string RemoveChars(this string str, int amount = 1, int startIndex = 0)
         {
             string ret = string.Empty;
-            for(int i = 0; i < startIndex; i++) ret += s[i];
-            for(int i = startIndex + amount; i < s.Length; i++) ret += s[i];
+            for(int i = 0; i < startIndex; i++) ret += str[i];
+            for(int i = startIndex + amount; i < str.Length; i++) ret += str[i];
             return ret;
 
         }

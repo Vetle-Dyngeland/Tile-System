@@ -24,6 +24,7 @@ namespace TileSystem2.Managers.Statics
             LoadTexture("whitePixel", "Test");
             LoadTexture("circle", "Test");
             LoadTexture("tileset", "Tiles");
+            LoadTexture("Tile0", "Tiles");
 
             ContentLoaded = true;
         }
@@ -32,7 +33,9 @@ namespace TileSystem2.Managers.Statics
         {
             textureListFolderDict = new() {
                 { "Test", 0 },
-                { "Tiles", 1 }
+                { "test", 0 },
+                { "Tiles", 1 },
+                { "tiles", 1 },
             };
         }
 

@@ -23,11 +23,6 @@ namespace TileSystem2.Managers
             boardManager = new(cameraManager.camera);
         }
 
-        public void LoadContent()
-        {
-            boardManager.LoadContent();
-        }
-
         public void Update(GameTime gameTime)
         {
             if(exitCondition.Held()) game.Exit();

@@ -21,6 +21,7 @@ namespace TileSystem2.Base.Defaults
         {
             ScreenManager.Setup(graphics);
             DebugManager.ResetWindow();
+            InputHelper.Setup(this);
             managerManager = new(this);
 
             base.Initialize();
@@ -28,9 +29,7 @@ namespace TileSystem2.Base.Defaults
 
         protected override void LoadContent()
         {
-            InputHelper.Setup(this);
             ContentLoader.LoadContent(Content);
-            managerManager.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)

@@ -11,12 +11,14 @@ namespace TileSystem2.Base.Sprites
         public static Dictionary<string, Rectangle> TypeSourceRectDict { get; private set; }
         public static Dictionary<string, float> TypeFrictionDict { get; private set; }
         public static Dictionary<string, float> TypeBouncinessDict { get; private set; }
+        public static Dictionary<string, int> TypeMaxIndexDict { get; private set; }
 
         public string type;
         public int index;
 
         public static int TileSize { get; set; } = 32;
         private const int sourceImageTileSize = 16;
+        private static bool drawEmpty = false;
 
         public Tile(string type, int index, Vector2 position = default) : base(null)
         {
@@ -32,7 +34,8 @@ namespace TileSystem2.Base.Sprites
         private static void InitializeDictionaries()
         {
             TypeTextureIndexDict = new() {
-                { "Grass", 0 }
+                { "Grass", 0 },
+                { "Air", 1 }
             };
 
             TypeFrictionDict = new() {
@@ -49,13 +52,21 @@ namespace TileSystem2.Base.Sprites
         //Hardcode rectangles into dictionary, revamp for automatic rectangles when recreating textures
         private static void InitializeSourceRectDictionary() 
         {
+            TypeMaxIndexDict = new();
             TypeSourceRectDict = new();
 
-            //Grass
+            //Air
             int index = 0;
+            index = AddRectangleToSourceRectDict("Air", index, new(0, 0), new(0, 0));
+            TypeMaxIndexDict.Add("Air", index - 1);
+
+            //Grass
+            index = 0;
             index = AddRectangleToSourceRectDict("Grass", index, new(0, 0), new(2, 2));
-            index = AddRectangleToSourceRectDict("Grass", index, new(3, 0), new(5, 2), true);
-            AddRectangleToSourceRectDict("Grass", index, new(6, 3), new(8, 3));
+            index = AddRectangleToSourceRectDict("Grass", index, new(3, 0), new(4, 1));
+            index = AddRectangleToSourceRectDict("Grass", index, new(3, 2), new(5, 2));
+            TypeMaxIndexDict.Add("Grass", index - 1);
+
         }
 
         private static int AddRectangleToSourceRectDict(string key, int index, Vector2Int p1, Vector2Int p2, bool hollow = false)
@@ -75,9 +86,10 @@ namespace TileSystem2.Base.Sprites
                 useGravity = false;
                 isStatic = true;
                 shouldCollide = false;
-                shouldDraw = false;
+                shouldDraw = drawEmpty;
 
-                texture = ContentLoader.Textures[0][0];
+                sourceRect = TypeSourceRectDict[type + index];
+                texture = ContentLoader.Textures[1][TypeTextureIndexDict[type]];
                 size = Vector2.One * TileSize;
                 hitbox = DrawRect;
                 return;
@@ -93,6 +105,11 @@ namespace TileSystem2.Base.Sprites
 
             useGravity = false;
             isStatic = true;
+        }
+
+        public static void SetDrawEmpty(bool value = true)
+        {
+            drawEmpty = value;
         }
     }
 }

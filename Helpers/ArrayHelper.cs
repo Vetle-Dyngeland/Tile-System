@@ -48,5 +48,35 @@ namespace TileSystem2.Helpers
             }
         }
         #endregion Conversion
+
+        #region ToString
+        public static string ArrayToString<T>(this T[] arr)
+        {
+            string ret = "{ ";
+            foreach(var item in arr)
+                ret += $"{item}, ";
+            return $"{ret.TrimEnd(' ', ',')} }}";
+        }
+
+        public static string JaggedToString<T>(this T[][] arr)
+        {
+            string ret = "{ ";
+            foreach(var array in arr)
+                ret += $"{array.ArrayToString()}, ";
+            return $"{ret.TrimEnd(',', ' ')} }}";
+        }
+
+        public static string MutliDimToString<T>(this T[,] arr)
+        {
+            string ret = "{ ";
+            for(int x = 0; x < arr.GetLength(0); x++) {
+                ret += "{ ";
+                for(int y = 0; y < arr.GetLength(1); y++)
+                    ret += $"{arr[x, y]}, ";
+                ret = $"{ret.TrimEnd(' ', ',')} }}, ";
+            }
+            return $"{ret.TrimEnd(' ', ',')} }}";
+        }
+        #endregion ToString
     }
 }

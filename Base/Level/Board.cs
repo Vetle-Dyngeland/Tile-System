@@ -8,16 +8,13 @@ namespace TileSystem2.Base.Level
     public class Board
     {
         public Tile[,] tiles;
-        public int width, height;
 
         public void Generate(string[,] level)
         {
-            width = level.GetLength(0);
-            height = level.GetLength(1);
-            tiles = new Tile[width, height];
+            tiles = new Tile[level.GetLength(0), level.GetLength(1)];
 
-            for(int x = 0; x < width; x++)
-                for(int y = 0; y < height; y++) {
+            for(int x = 0; x < level.GetLength(0); x++)
+                for(int y = 0; y < level.GetLength(1); y++) {
                     GetTileInfo(level, new(x, y), out string type, out int index);
                     tiles[x, y] = new(type, index, new Vector2(x, y) * Tile.TileSize);
                 }
