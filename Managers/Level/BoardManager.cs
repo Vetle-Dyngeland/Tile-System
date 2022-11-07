@@ -23,6 +23,8 @@ namespace TileSystem2.Managers.Level
         public readonly Board board = new();
         private int currentLevelIndex = 0;
         private readonly Camera camera;
+        private bool oldDrawEmpty;
+
         public static Vector2Int MouseTilePosition { get; private set; }
         private readonly BoardEditor boardEditor;
 
@@ -72,22 +74,36 @@ namespace TileSystem2.Managers.Level
 
         public void Update(GameTime gameTime)
         {
+            oldDrawEmpty = new Tile("Air", 0).shouldDraw;
             int oldLevelIndex = currentLevelIndex;
-            //Debug
-            if(loadNextLevelCondition.Pressed()) LoadLevel(++currentLevelIndex);
-            if(loadPreviousLevelCondition.Pressed()) LoadLevel(--currentLevelIndex);
-            if(drawEmpty.Pressed()) Tile.SetDrawEmpty(true);
+
+            DebugInput(); //Remove
 
             if(oldLevelIndex == currentLevelIndex)
                 EditBoard(gameTime);
+            FrontEnd();
+        }
 
-            if(LevelChanged() || Tile.TypeTextureIndexDict == null)
-                board.Generate(level.To2DArray());
-            foreach(Sprite sprite in board.tiles)
-                DrawManager.AddSpriteAtLayer(sprite, 1);
+        private void DebugInput()
+        {
+            if(loadNextLevelCondition.Pressed()) LoadLevel(++currentLevelIndex);
+            if(loadPreviousLevelCondition.Pressed()) LoadLevel(--currentLevelIndex);
+            if(drawEmpty.Pressed()) Tile.SetDrawEmpty(!oldDrawEmpty);
         }
 
         private void EditBoard(GameTime gameTime)
+        {
+            SaveOldLevel();
+
+            UpdateMouseTilePos();
+            boardEditor.Update(gameTime);
+            if(level.Count == 0 || level[0].Count == 0 || level[0][0] == "")
+                level = new() { new() { "Air0 " } };
+
+            if(LevelChanged()) UpdateCSV();
+        }
+
+        private void SaveOldLevel()
         {
             oldLevel = new();
             foreach(var layer in level) {
@@ -95,11 +111,6 @@ namespace TileSystem2.Managers.Level
                 foreach(var tile in layer)
                     oldLevel[^1].Add(tile);
             }
-
-            UpdateMouseTilePos();
-            boardEditor.Update(gameTime);
-
-            if(LevelChanged()) UpdateCSV();
         }
 
         private bool LevelChanged()
@@ -107,11 +118,11 @@ namespace TileSystem2.Managers.Level
             if(oldLevel.Count != level.Count || 
                 (oldLevel.Count > 0 ? oldLevel[0].Count : 0) != (level.Count > 0 ? level[0].Count : 0)) return true;
 
-            for(int i = 0; i < level.Count; i++)
-                for(int j = 0; j < level[i].Count; j++)
-                    if(oldLevel[i][j] != level[i][j])
+            for(int x = 0; x < level.Count; x++)
+                for(int y = 0; y < level[x].Count; y++)
+                    if(oldLevel[x][y] != level[x][y])
                         return true;
-            return false;
+            return oldDrawEmpty == new Tile("Air", 0).shouldDraw;
         }
 
         private void UpdateCSV()
@@ -136,5 +147,13 @@ namespace TileSystem2.Managers.Level
 
         private void UpdateMouseTilePos()
             => MouseTilePosition = new(Vector2.Floor(camera.ScreenToWorld(InputHelper.NewMouse.Position.ToVector2()) / Tile.TileSize));
+
+        private void FrontEnd()
+        {
+            if(LevelChanged() || Tile.TypeTextureIndexDict == null)
+                board.Generate(level.To2DArray());
+            foreach(var tile in board.tiles)
+                DrawManager.AddSpriteAtLayer(tile, 1);
+        }
     }
 }

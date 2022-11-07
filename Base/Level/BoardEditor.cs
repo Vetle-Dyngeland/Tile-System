@@ -10,6 +10,7 @@ using TileSystem2.Helpers;
 using System.Threading;
 using TileSystem2.Base.Structs;
 using System;
+using SixLabors.Fonts.Unicode;
 
 namespace TileSystem2.Base.Level
 {
@@ -129,22 +130,25 @@ namespace TileSystem2.Base.Level
         private void RemoveEmptyLines()
         {
             //X
-            for(int x = level.Count - 1; x >= 0; x--) {
-                int count = 0;
+            for(int x = level.Count - 1; x >= 1; x--) {
+                if(level.Count <= 1) break;
+
                 for(int y = 0; y < (level.Count > 0 ? level[0].Count : 0); y++)
-                    if(level[x][y] != "Air0") count++;
-                if(count == 0) RemoveXLine(x);
-                else break;
+                    if(level[x][y] != "Air0") goto LoopEndX;
+                RemoveXLine(x);
             }
-            
+        LoopEndX:;
+
             //Y
             for(int y = (level.Count > 0 ? level[0].Count : 0) - 1; y >= 0; y--) {
-                int count = 0;
+                if(level[0].Count <= 1) break;
+
                 for(int x = 0; x < level.Count; x++)
-                    if(level[x][y] != "Air0") count++;
-                if(count == 0) RemoveYLine(y);
-                else break;
+                    if(level[x][y] != "Air0") goto LoopEndY;
+                RemoveYLine(y);
             }
+
+        LoopEndY:;
         }
 
         private void RemoveXLine(int index)

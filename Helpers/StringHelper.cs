@@ -4,6 +4,10 @@
     {
         public static string GetInt(this string str, out int result, int startIndex = 0, bool shouldRemove = false)
         {
+            if(str.Length == 0) {
+                result = 0;
+                return string.Empty;
+            }
             int checkIndex = startIndex;
             string resultString = string.Empty;
             while(checkIndex < str.Length && int.TryParse(str[checkIndex].ToString(), out int res)){
